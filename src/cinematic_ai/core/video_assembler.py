@@ -163,13 +163,14 @@ class VideoAssembler:
             if bg_music.duration < video_clip.duration:
                 n_loops = int(video_clip.duration / bg_music.duration) + 1
                 bg_music_clips = [bg_music] * n_loops
-                # MoviePy 2.x changed how audio concatenation works
+                # MoviePy 2.x and 1.x audio concatenation
                 try:
                     from moviepy import concatenate_audioclips
                     bg_music = concatenate_audioclips(bg_music_clips)
                 except ImportError:
-                    # Fallback for MoviePy 1.x - use video concatenation
-                    bg_music = concatenate_videoclips(bg_music_clips)
+                    # Fallback for MoviePy 1.x
+                    from moviepy.editor import concatenate_audioclips
+                    bg_music = concatenate_audioclips(bg_music_clips)
                 
                 # Trim to match video duration
                 try:

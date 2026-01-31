@@ -13,46 +13,61 @@ from cinematic_ai.core.video_generator import CinematicAI
 # Example 1: Basic video generation
 def example_basic():
     """Most basic usage - just script and images"""
-    generator = CinematicAI()
-    
-    generator.generate_video(
-        script_path="demo/scripts/sample_script.txt",
-        characters_dir="demo/characters",
-        locations_dir="demo/locations",
-        output_path="demo/output/basic_example.mp4"
-    )
-    print("✓ Basic video created!")
+    try:
+        generator = CinematicAI()
+        
+        generator.generate_video(
+            script_path="demo/scripts/sample_script.txt",
+            characters_dir="demo/characters",
+            locations_dir="demo/locations",
+            output_path="demo/output/basic_example.mp4"
+        )
+        print("✓ Basic video created!")
+    except Exception as e:
+        print(f"✗ Error creating basic video: {e}")
+        return False
+    return True
 
 
 # Example 2: With custom configuration
 def example_custom_config():
     """Using custom configuration file"""
-    # First, you would create a custom config file
-    # Then initialize with it:
-    generator = CinematicAI(config_path="config/default_config.yaml")
-    
-    generator.generate_video(
-        script_path="demo/scripts/sample_script.txt",
-        characters_dir="demo/characters",
-        locations_dir="demo/locations",
-        output_path="demo/output/custom_config_example.mp4"
-    )
-    print("✓ Video with custom config created!")
+    try:
+        # First, you would create a custom config file
+        # Then initialize with it:
+        generator = CinematicAI(config_path="config/default_config.yaml")
+        
+        generator.generate_video(
+            script_path="demo/scripts/sample_script.txt",
+            characters_dir="demo/characters",
+            locations_dir="demo/locations",
+            output_path="demo/output/custom_config_example.mp4"
+        )
+        print("✓ Video with custom config created!")
+    except Exception as e:
+        print(f"✗ Error creating video with custom config: {e}")
+        return False
+    return True
 
 
 # Example 3: With background music
 def example_with_music():
     """Adding background music to the video"""
-    generator = CinematicAI()
-    
-    generator.generate_video(
-        script_path="demo/scripts/sample_script.txt",
-        characters_dir="demo/characters",
-        locations_dir="demo/locations",
-        output_path="demo/output/with_music_example.mp4",
-        background_music="path/to/music.mp3"  # Add your music file
-    )
-    print("✓ Video with background music created!")
+    try:
+        generator = CinematicAI()
+        
+        generator.generate_video(
+            script_path="demo/scripts/sample_script.txt",
+            characters_dir="demo/characters",
+            locations_dir="demo/locations",
+            output_path="demo/output/with_music_example.mp4",
+            background_music="path/to/music.mp3"  # Add your music file
+        )
+        print("✓ Video with background music created!")
+    except Exception as e:
+        print(f"✗ Error creating video with music: {e}")
+        return False
+    return True
 
 
 if __name__ == '__main__':
