@@ -2,10 +2,13 @@
 import os
 from pathlib import Path
 from typing import List, Optional
-from moviepy.editor import (
-    ImageClip, AudioFileClip, CompositeAudioClip, 
-    concatenate_videoclips, CompositeVideoClip
-)
+try:
+    # Try MoviePy 2.x imports
+    from moviepy import ImageClip, AudioFileClip, CompositeAudioClip, concatenate_videoclips
+except ImportError:
+    # Fallback to MoviePy 1.x imports
+    from moviepy.editor import ImageClip, AudioFileClip, CompositeAudioClip, concatenate_videoclips
+
 from ..utils.logger import get_logger
 
 logger = get_logger('video_assembler')
@@ -130,13 +133,20 @@ class VideoAssembler:
                 ]
                 clip = concatenate_videoclips(frame_clips, method="compose")
             
-            # Set resolution
-            clip = clip.resize((self.width, self.height))
+            # Set resolution - MoviePy 2.x uses resized(), 1.x uses resize()
+            try:
+                clip = clip.resized((self.width, self.height))
+            except AttributeError:
+                clip = clip.resize((self.width, self.height))
             
             # Add audio if available
             if audio_path and os.path.exists(audio_path):
                 audio = AudioFileClip(audio_path)
-                clip = clip.set_audio(audio)
+                # MoviePy 2.x uses with_audio(), 1.x uses set_audio()
+                try:
+                    clip = clip.with_audio(audio)
+                except AttributeError:
+                    clip = clip.set_audio(audio)
             
             return clip
         
@@ -152,14 +162,32 @@ class VideoAssembler:
             # Loop background music if video is longer
             if bg_music.duration < video_clip.duration:
                 n_loops = int(video_clip.duration / bg_music.duration) + 1
-                bg_music = concatenate_videoclips([bg_music] * n_loops)
-                bg_music = bg_music.subclip(0, video_clip.duration)
+                bg_music_clips = [bg_music] * n_loops
+                # MoviePy 2.x changed how audio concatenation works
+                try:
+                    from moviepy import concatenate_audioclips
+                    bg_music = concatenate_audioclips(bg_music_clips)
+                except ImportError:
+                    # Fallback for MoviePy 1.x - use video concatenation
+                    bg_music = concatenate_videoclips(bg_music_clips)
+                
+                # Trim to match video duration
+                try:
+                    bg_music = bg_music.with_subclip(0, video_clip.duration)
+                except AttributeError:
+                    bg_music = bg_music.subclip(0, video_clip.duration)
             else:
-                bg_music = bg_music.subclip(0, video_clip.duration)
+                try:
+                    bg_music = bg_music.with_subclip(0, video_clip.duration)
+                except AttributeError:
+                    bg_music = bg_music.subclip(0, video_clip.duration)
             
-            # Adjust volume
+            # Adjust volume - MoviePy 2.x uses with_effects
             bg_volume = self.config.get('audio.background_music_volume', 0.3)
-            bg_music = bg_music.volumex(bg_volume)
+            try:
+                bg_music = bg_music.with_volume_scaled(bg_volume)
+            except AttributeError:
+                bg_music = bg_music.volumex(bg_volume)
             
             # Mix with existing audio
             if video_clip.audio:
@@ -167,7 +195,11 @@ class VideoAssembler:
             else:
                 final_audio = bg_music
             
-            return video_clip.set_audio(final_audio)
+            # Set audio on clip
+            try:
+                return video_clip.with_audio(final_audio)
+            except AttributeError:
+                return video_clip.set_audio(final_audio)
         
         except Exception as e:
             logger.error(f"Error adding background music: {e}")
