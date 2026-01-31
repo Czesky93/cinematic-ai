@@ -34,12 +34,13 @@ ENV/
 # Logs
 logs/*.log
 
-# Demo output
+# Demo output - keep structure but ignore generated files
 demo/output/*.mp4
 demo/output/*.mp3
 demo/output/*.wav
 demo/output/*.png
 demo/output/*.jpg
+demo/output/temp/
 
 # Temporary files
 *.tmp
