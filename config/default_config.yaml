@@ -1,0 +1,36 @@
+# Cinematic AI Configuration
+video:
+  max_duration: 300  # 5 minutes in seconds
+  fps: 24
+  resolution:
+    width: 1920
+    height: 1080
+  format: "mp4"
+  codec: "libx264"
+
+audio:
+  tts_language: "en"
+  tts_slow: false
+  background_music_volume: 0.3
+  voiceover_volume: 1.0
+
+scenes:
+  min_duration: 3  # seconds per scene
+  max_duration: 30
+  transition_duration: 0.5
+
+frame_generation:
+  mode: "slideshow"  # Options: "slideshow" or "ai" (if available)
+  slideshow:
+    image_duration: 5  # seconds per image
+    zoom_effect: true
+    pan_effect: true
+
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "logs/cinematic_ai.log"
+
+output:
+  directory: "demo/output"
+  temp_directory: "demo/output/temp"
